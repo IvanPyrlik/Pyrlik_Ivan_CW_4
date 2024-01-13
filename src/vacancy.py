@@ -1,16 +1,16 @@
 class Vacancy:
     """Класс для создания вакансий из данных"""
-    def __init__(self, vacancy_name: str, url: str, salary_from: int, salary_to: int, current: str, description: str):
+    def __init__(self, vacancy_name: str, url: str, salary_from: int, salary_to: int, currency: str, description: str):
         self.__vacancy_name = vacancy_name
         self.__url = url
         self.__salary_from = self.transformation_salary(salary_from)
         self.__salary_to = self.transformation_salary(salary_to)
-        self.__current = current
+        self.__currency = currency
         self.__description = description
 
     def __str__(self):
         return (f'Название вакансии: {self.__vacancy_name}, '
-                f'зарплата: от {self.__salary_from} до {self.__salary_to}, '
+                f'зарплата: от {self.__salary_from} до {self.__salary_to} {self.__currency}, '
                 f'ссылка на вакансию: {self.__url}.')
 
     @staticmethod
@@ -42,7 +42,7 @@ class HeadHunterVacancy(Vacancy):
 
     def __str__(self):
         return (f'На HeadHunter для вас нашлось - название вакансии: {self.__vacancy_name}, '
-                f'зарплата: от {self.__salary_from} до {self.__salary_to}, '
+                f'зарплата: от {self.__salary_from} до {self.__salary_to} {self.__currency}, '
                 f'ссылка на вакансию: {self.__url}.')
 
 
@@ -51,7 +51,7 @@ class SuperJobVacancy(Vacancy):
 
     def __str__(self):
         return (f'На SuperJob для вас нашлось - название вакансии: {self.__vacancy_name}, '
-                f'зарплата: от {self.__salary_from} до {self.__salary_to}, '
+                f'зарплата: от {self.__salary_from} до {self.__salary_to} {self.__currency}, '
                 f'ссылка на вакансию: {self.__url}.')
 
 
