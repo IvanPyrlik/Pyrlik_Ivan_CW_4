@@ -1,25 +1,63 @@
 class Vacancy:
     """Класс для создания вакансий из данных"""
-    def __init__(self, name, url, salary, requirements):
-        self.__name = name
+    def __init__(self, vacancy_name: str, url: str, salary_from: int, salary_to: int, current: str, description: str):
+        self.__vacancy_name = vacancy_name
         self.__url = url
-        self.__salary = salary
-        self.__requirements = requirements
+        self.__salary_from = self.transformation_salary(salary_from)
+        self.__salary_to = self.transformation_salary(salary_to)
+        self.__current = current
+        self.__description = description
 
-    def __repr__(self):
-        return f'{__class__.__name__}: {self.__name}, salary: {self.__salary}, link: {self.__url}'
+    def __str__(self):
+        return (f'Название вакансии: {self.__vacancy_name}, '
+                f'зарплата: от {self.__salary_from} до {self.__salary_to}, '
+                f'ссылка на вакансию: {self.__url}.')
 
-    @property
-    def salary(self):
-        """Геттер для зарплаты"""
-        return self.__salary
+    @staticmethod
+    def transformation_salary(salary) -> int:
+        """
+        Метод для зарплаты.
+        :param salary: Зарплата.
+        :return: Если зарплата None, выводит 0.
+        """
+        if salary is None:
+            return 0
+        return salary
 
-    def get_info(self):
-        """Получение подробной информации в виде словаря"""
-        info = {
-                'name': self.__name,
-                'salary': self.__salary,
-                'url': self.__url,
-                'requirements': self.__requirements
-                }
-        return info
+    def __gt__(self, other) -> int:
+        """Метод сравнения - больше."""
+        return int(self.__salary_from) > int(other.salary_from)
+
+    def __lt__(self, other) -> int:
+        """Метод сравнения - меньше."""
+        return int(other.salary_to) < int(self.__salary_to)
+
+    def __eq__(self, other) -> int:
+        """Метод сравнения - равенство."""
+        return int(self.__salary_from) == int(other.salary_from)
+
+
+class HeadHunterVacancy(Vacancy):
+    """Подкласс для создания вакансий из данных HeadHunter"""
+
+    def __str__(self):
+        return (f'На HeadHunter для вас нашлось - название вакансии: {self.__vacancy_name}, '
+                f'зарплата: от {self.__salary_from} до {self.__salary_to}, '
+                f'ссылка на вакансию: {self.__url}.')
+
+
+class SuperJobVacancy(Vacancy):
+    """Подкласс для создания вакансий из данных SuperJob"""
+
+    def __str__(self):
+        return (f'На SuperJob для вас нашлось - название вакансии: {self.__vacancy_name}, '
+                f'зарплата: от {self.__salary_from} до {self.__salary_to}, '
+                f'ссылка на вакансию: {self.__url}.')
+
+
+
+
+
+
+
+
