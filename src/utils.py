@@ -15,7 +15,7 @@ def create_hh_instances(vacancies: list[dict]) -> list[Vacancy]:
     return [HeadHunterVacancy(vacancy_name=vacancy["name"],
                               url=vacancy["alternate_url"],
                               salary=vacancy["salary"],
-                              currency=vacancy["salary"],
+                              currency=vacancy['salary'],
                               date_published=get_formatted_date_hh(vacancy["published_at"]),
                               description=vacancy["snippet"]["responsibility"])
             for vacancy in vacancies]
@@ -60,13 +60,5 @@ def get_top_vacancies_by_date(vacancies: list[Vacancy]) -> list[Vacancy]:
     return sorted_list
 
 
-def convert_to_instance(vacancies: list[dict]) -> list[dict]:
-    convert = []
-    for vacancy in vacancies:
-        convert.append(vacancy)
-    return convert
-
-
 def print_vacancies(vacancies):
-    vacancy_dict = convert_to_instance(vacancies)
-    print(str(vacancy_dict))
+    print(''.join(map(str, vacancies)))

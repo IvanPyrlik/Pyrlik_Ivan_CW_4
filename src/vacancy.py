@@ -1,48 +1,37 @@
+from typing import Tuple, Any
+
+
 class Vacancy:
     """
     Класс для создания вакансий из данных.
     """
 
-    def __init__(self, vacancy_name: str, url: str, salary: int, currency: str, date_published: str, description: str):
+    def __init__(self,
+                 vacancy_name: str,
+                 url: str,
+                 salary: int,
+                 currency: str,
+                 date_published: str,
+                 description: str,
+                 platform=None):
         self.__vacancy_name = vacancy_name
         self.__url = url
         self.__salary = salary
         self.__currency = currency
         self.__date_published = date_published
         self.__description = description
+        self.platform_name = platform
 
-    def __str__(self):
-        return (f'Название вакансии: {self.__vacancy_name}, '
-                f'зарплата: от {self.__salary.get('from')} '
-                f'до {self.__salary.get('to')} {self.__salary.get('currency')}, '
-                f'ссылка на вакансию: {self.__url}.')
-
-    @property
-    def get_salary(self) -> str:
-        """
-        Метод возвращает зарплату в отформатированном виде.
-        """
-
-        if self.__salary is not None:
-
-            if self.__salary.get('from') not in [0, None] and self.__salary.get('to') not in [0, None]:
-                return (f"По вакансии {self.__vacancy_name} зарплата "
-                        f"от {self.__salary.get('from')} "
-                        f"до {self.__salary.get('to')} {self.__salary.get('currency')}.")
-
-            elif self.__salary.get('from') == 0 or None and self.__salary.get('to') == 0 or None:
-                return f'По вакансии {self.__vacancy_name} зарплата не указана.'
-
-            elif self.__salary.get('from') in [0, None] and self.__salary.get('to') not in [0, None]:
-                return (f"По вакансии {self.__vacancy_name} зарплата "
-                        f"до {self.__salary.get('to')} {self.__salary.get('currency')}.")
-
-            elif self.__salary.get('from') not in [0, None] and self.__salary.get('to') in [0, None]:
-                return (f"По вакансии {self.__vacancy_name} зарплата "
-                        f"от {self.__salary.get('from')} {self.__salary.get('currency')}.")
-
-        else:
-            return f'По вакансии {self.__vacancy_name} зарплата не указана.'
+    def __repr__(self):
+        if self.__salary is None:
+            return (f"На сайте {self.platform_name}.\n Вакансия - {self.__vacancy_name},\n "
+                    f"зарплата не указана, ссылка - {self.__url}\n"
+                    f"Дата публикации {self.__date_published}")
+        elif self.__url is None:
+            return (f"Вакансия - {self.__vacancy_name}, зарплата - {self.__salary}, cсылка - не указана.\n"
+                    f"Дата публикации {self.__date_published}")
+        return (f"Вакансия - {self.__vacancy_name}, зарплата - {self.__salary}, cсылка - {self.__url}\n"
+                f"Дата публикации {self.__date_published}")
 
     def __gt__(self, other):
         """
@@ -75,11 +64,12 @@ class HeadHunterVacancy(Vacancy):
     """
     platform_name = "HeadHunter"
 
-    def __str__(self):
-        return (f'На HeadHunter для вас нашлось - название вакансии: {self.__vacancy_name}, '
-                f'зарплата: от {self.__salary.get('from')} '
-                f'до {self.__salary.get('to')} {self.__salary.get('currency')}, '
-                f'ссылка на вакансию: {self.__url}.')
+    def __repr__(self):
+        if self.__salary is None:
+            return (f"На сайте {self.platform_name}.\n Вакансия - {self.__vacancy_name},\n зарплата не указана, ссылка - {self.__url}\n"
+                    f"Дата публикации {self.__date_published}")
+        return (f"На сайте {self.platform_name}.\n Вакансия - {self.__vacancy_name}, зарплата - {self.__salary}, cсылка - {self.__url}\n"
+                f"Дата публикации {self.__date_published}")
 
     def to_dict(self):
         """
@@ -97,11 +87,12 @@ class SuperJobVacancy(Vacancy):
     """
     platform_name = "SuperJob"
 
-    def __str__(self):
-        return (f'На SuperJob для вас нашлось - название вакансии: {self.__vacancy_name}, '
-                f'зарплата: от {self.__salary.get('from')} '
-                f'до {self.__salary.get('to')} {self.__salary.get('currency')}, '
-                f'ссылка на вакансию: {self.__url}.')
+    def __repr__(self):
+        if self.__salary is None:
+            return (f"На сайте {self.platform_name}.\n Вакансия - {self.__vacancy_name},\n зарплата не указана, ссылка - {self.__url}\n"
+                    f"Дата публикации {self.__date_published}")
+        return (f"На сайте {self.platform_name}.\n Вакансия - {self.__vacancy_name}, зарплата - {self.__salary}, cсылка - {self.__url}\n"
+                f"Дата публикации {self.__date_published}")
 
     def to_dict(self):
         """

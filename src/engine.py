@@ -1,6 +1,7 @@
 import json
 from abc import ABC, abstractmethod
 
+from config import VACANCIES_PATH
 from src.vacancy import Vacancy
 
 
@@ -55,7 +56,7 @@ class JsonSaver(Saver):
             vacancies.append(query)
         return vacancies
 
-    def delete_vacancies(self, query=None) -> list[dict]:
+    def delete_vacancies(self, query=None) -> None:
         """
         Метод для удаления информации о вакансиях.
         :param query: Критерии для удаления.
@@ -67,7 +68,20 @@ class JsonSaver(Saver):
         vacancies = []
         for query in all_vacancies:
             vacancies.append(query)
-        return vacancies
-
         with open(self.path, "w", encoding="utf-8") as file:
             json.dump(vacancies, file)
+
+
+def load_json() -> list[Vacancy]:
+    with open(VACANCIES_PATH, encoding="utf-8") as json_file:
+        vacancy_json = json.load(json_file)
+    filter_vacancy = []
+    for vacancy in vacancy_json:
+        filter_vacancy.append(Vacancy(vacancy["vacancy_name"],
+                                      vacancy["url"],
+                                      vacancy["salary"],
+                                      vacancy["salary"],
+                                      vacancy["date_published"],
+                                      vacancy["description"],
+                                      vacancy["platform"]))
+    return filter_vacancy
