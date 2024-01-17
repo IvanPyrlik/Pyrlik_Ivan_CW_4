@@ -12,40 +12,32 @@ load_dotenv()
 class API(ABC):
     """Абстрактный класс для работы с API сайтов с вакансиями."""
     @abstractmethod
-    def get_vacancies(self) -> list[dict]:
+    def get_vacancies(self, name) -> list[dict]:
         raise NotImplementedError
 
 
 class HeadHunterAPI(API):
     """Подкласс для работы с API сайта HeadHunter."""
-    def __init__(self, query: str, amount_vacancies: int):
-        self.query = query
-        self.amount_vacancies = amount_vacancies
-        self.params = {"text": self.query, "per_page": self.amount_vacancies}
 
-    def get_vacancies(self, page=0) -> list[dict]:
+    def get_vacancies(self, name):
         """
         Метод для поиска на HeadHunter.
-        :param page: Номер страницы начала поиска.
+        :param name: Параметр поиска.
         :return: Выводит данные.
         """
-        self.params["page"] = page
-        return requests.get(url=HH_URL, params=self.params).json()["items"]
+        params = {"name": name, "page": 0, "per_page": 100}
+
+        return requests.get(url=HH_URL, params=params).json().get("items")
 
 
 class SuperJobAPI(API):
     """Подкласс для работы с API сайта SuperJob."""
-    def __init__(self, query: str, amount_vacancies: int):
-        self.query = query
-        self.amount_vacancies = amount_vacancies
-        self.params = {"keyword": self.query, "count": self.amount_vacancies}
-
-    def get_vacancies(self, page=0) -> list[dict]:
+    def get_vacancies(self, name):
         """
         Метод для поиска на SuperJob.
-        :param page: Номер страницы начала поиска.
+        :param name: Параметр поиска.
         :return: Выводит данные.
         """
-        self.params["page"] = page
+        params = {"keyword": name, "page": 0, "count": 100}
         headers = {"X-Api-App-Id": os.getenv('SJ_API_KEY')}
-        return requests.get(url=SJ_URL, params=self.params, headers=headers).json().get("objects")
+        return requests.get(url=SJ_URL, params=params, headers=headers).json().get("objects")

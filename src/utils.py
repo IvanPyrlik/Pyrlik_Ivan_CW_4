@@ -1,39 +1,56 @@
-import json
 from datetime import datetime
-from operator import itemgetter
-from typing import List
-
-from src.vacancy import HeadHunterVacancy, SuperJobVacancy, Vacancy
+from src.vacancy import Vacancy
 
 
-def create_hh_instances(vacancies: list[dict]) -> list[Vacancy]:
+def filter_vacancies(hh_vacancies: list[dict], sj_vacancies: list[dict], filter_words) -> list[Vacancy]:
     """
-    Метод для создания экземпляров класса для HeadHunter.
-    :param vacancies: Нашедшиеся вакансии.
-    :return: Список с экземлярами класса.
+    Функция для фильтрации вакансий по ключевым словам.
     """
-    return [HeadHunterVacancy(vacancy_name=vacancy["name"],
-                              url=vacancy["alternate_url"],
-                              salary=vacancy["salary"],
-                              currency=vacancy['salary'],
-                              date_published=get_formatted_date_hh(vacancy["published_at"]),
-                              description=vacancy["snippet"]["responsibility"])
-            for vacancy in vacancies]
+    vacancies = []
+    if hh_vacancies is not None:
+        for vacancy in hh_vacancies:
+            for word in filter_words:
+                if word.lower() in vacancy["name"].lower():
+                    vacancies.append(Vacancy(vacancy_name=vacancy["name"],
+                                             url=vacancy["alternate_url"],
+                                             salary=vacancy["salary"],
+                                             date_published=get_formatted_date_hh(vacancy['published_at']),
+                                             description=vacancy["snippet"]["responsibility"]))
+
+    if sj_vacancies is not None:
+        for vacancy in sj_vacancies:
+            for word in filter_words:
+                if word.lower() in vacancy["profession"]:
+                    vacancies.append(Vacancy(vacancy_name=vacancy["profession"],
+                                             url=vacancy["link"],
+                                             salary=vacancy["payment_from"],
+                                             date_published=get_formatted_date_sj(vacancy[str("date_published")]),
+                                             description=vacancy["work"]))
+    return vacancies
 
 
-def create_sj_instances(vacancies: list[dict]) -> list[Vacancy]:
+def sort_vacancies(filtered_vacancies):
     """
-    Метод для создания экземпляров класса для SuperJob.
-    :param vacancies: Нашедшиеся вакансии.
-    :return: Список с экземлярами класса.
+    Функция для сортировки списка вакансий по зарплате.
     """
-    return [SuperJobVacancy(vacancy_name=vacancy["profession"],
-                            url=vacancy["link"],
-                            salary=vacancy["payment_from"],
-                            currency=vacancy["currency"],
-                            date_published=get_formatted_date_sj(vacancy[str("date_published")]),
-                            description=vacancy["work"])
-            for vacancy in vacancies]
+    return sorted(filtered_vacancies, key=lambda v: v.salary or 0, reverse=True)
+
+
+def get_top_vacancies(filtered_vacancies, top_n):
+    """
+    Получение первых top_n вакансий.
+    """
+    return filtered_vacancies[:top_n]
+
+
+def print_vacancies(vacancies):
+    """
+    Вывод всех вакансий.
+    """
+    count = 0
+    for vacancy in vacancies:
+        count += 1
+        print(f'{count}.{vacancy}')
 
 
 def get_formatted_date_hh(date: str) -> str:
@@ -50,15 +67,3 @@ def get_formatted_date_sj(date: int) -> str:
     """
     date_format_sj = datetime.fromtimestamp(int(date)).strftime("%d.%m.%Y %X")
     return date_format_sj
-
-
-def get_top_vacancies_by_date(vacancies: list[Vacancy]) -> list[Vacancy]:
-    """
-    Функция сортирует вакансии по дате публикации.
-    """
-    sorted_list = sorted(vacancies, key=itemgetter("date_published"))
-    return sorted_list
-
-
-def print_vacancies(vacancies):
-    print(''.join(map(str, vacancies)))

@@ -28,19 +28,26 @@ class Saver(ABC):
         raise NotImplementedError
 
 
-class JsonSaver(Saver):
+class JsonSaver(Saver, ABC):
     """
     Класс для сохранения информации о вакансиях в JSON-файл.
     """
-    def add_vacancies(self, vacancies: list[Vacancy]) -> None:
+    def add_vacancies(self, vacancy: list[dict]) -> None:
         """
         Метод для добавления вакансий в файл.
-        :param vacancies: Вакансии.
+        :param vacancy: Вакансии.
         :return: JSON-файл.
         """
-        vacancies_json = [vacancy.to_dict() for vacancy in vacancies]
-        with open(self.path, "w", encoding="utf-8") as file:
-            json.dump(vacancies_json, file)
+        try:
+            with open(VACANCIES_PATH, encoding='UTF-8') as file:
+                data = json.load(file)
+        except json.decoder.JSONDecodeError:
+            data = []
+
+        data.append(vacancy)
+
+        with open(VACANCIES_PATH, "w", encoding='UTF-8') as file:
+            json.dump(data, file, indent=2, ensure_ascii=False)
 
     def get_vacancies(self, query=None) -> list[dict]:
         """
@@ -48,40 +55,25 @@ class JsonSaver(Saver):
         :param query: Критерии.
         :return: Данные по указанным критериям.
         """
-        with open(self.path, encoding="utf-8") as file:
+        with open(VACANCIES_PATH, encoding="utf-8") as file:
             all_vacancies = json.load(file)
 
         vacancies = []
-        for query in all_vacancies:
-            vacancies.append(query)
+        for vacancy in all_vacancies:
+            if query == vacancy:
+                vacancies.append(query)
         return vacancies
 
-    def delete_vacancies(self, query=None) -> None:
+    def delete_vacancy(self, vacancy) -> None:
         """
         Метод для удаления информации о вакансиях.
-        :param query: Критерии для удаления.
+        :param vacancy: Критерии для удаления.
         :return: JSON-файл.
         """
-        with open(self.path, encoding="utf-8") as file:
-            all_vacancies = json.load(file)
+        with open(VACANCIES_PATH, encoding="UTF-8") as file:
+            vacancies = json.load(file)
 
-        vacancies = []
-        for query in all_vacancies:
-            vacancies.append(query)
-        with open(self.path, "w", encoding="utf-8") as file:
-            json.dump(vacancies, file)
+        undel_vacancies = [obj for obj in vacancies if obj["url"] != vars(vacancy)["url"]]
 
-
-def load_json() -> list[Vacancy]:
-    with open(VACANCIES_PATH, encoding="utf-8") as json_file:
-        vacancy_json = json.load(json_file)
-    filter_vacancy = []
-    for vacancy in vacancy_json:
-        filter_vacancy.append(Vacancy(vacancy["vacancy_name"],
-                                      vacancy["url"],
-                                      vacancy["salary"],
-                                      vacancy["salary"],
-                                      vacancy["date_published"],
-                                      vacancy["description"],
-                                      vacancy["platform"]))
-    return filter_vacancy
+        with open(VACANCIES_PATH, "w") as file:
+            json.dump(undel_vacancies, file, indent=2, ensure_ascii=False)
